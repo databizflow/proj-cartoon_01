@@ -202,24 +202,37 @@ class CartoonDashboard:
         
         # 워드클라우드 생성
         try:
+            import os
+            import matplotlib.font_manager as fm
+            
             # Windows 한글 폰트 경로들 시도
             font_paths = [
-                'C:/Windows/Fonts/malgun.ttf',  # 맑은 고딕
-                'C:/Windows/Fonts/gulim.ttc',   # 굴림
-                'C:/Windows/Fonts/batang.ttc',  # 바탕
-                'C:/Windows/Fonts/NanumGothic.ttf'  # 나눔고딕 (설치된 경우)
+                'C:/Windows/Fonts/malgun.ttf',     # 맑은 고딕
+                'C:/Windows/Fonts/gulim.ttc',      # 굴림
+                'C:/Windows/Fonts/batang.ttc',     # 바탕
+                'C:/Windows/Fonts/NanumGothic.ttf' # 나눔고딕
             ]
             
+            # 사용 가능한 폰트 찾기
             font_path = None
             for path in font_paths:
-                try:
-                    import os
-                    if os.path.exists(path):
-                        font_path = path
-                        break
-                except:
-                    continue
+                if os.path.exists(path):
+                    font_path = path
+                    print(f"폰트 발견: {path}")
+                    break
             
+            # matplotlib 한글 폰트 설정
+            if font_path:
+                # 폰트 등록
+                font_prop = fm.FontProperties(fname=font_path)
+                plt.rcParams['font.family'] = font_prop.get_name()
+            else:
+                # 시스템 기본 한글 폰트 사용
+                plt.rcParams['font.family'] = ['Malgun Gothic', 'AppleGothic', 'DejaVu Sans']
+            
+            plt.rcParams['axes.unicode_minus'] = False
+            
+            # 워드클라우드 생성
             if font_path:
                 wordcloud = WordCloud(
                     font_path=font_path,
@@ -227,48 +240,38 @@ class CartoonDashboard:
                     height=400,
                     background_color='white',
                     max_words=50,
-                    colormap='viridis'
+                    colormap='viridis',
+                    prefer_horizontal=0.9,
+                    min_font_size=10
                 ).generate_from_frequencies(filtered_counts)
             else:
-                # 폰트를 찾을 수 없으면 기본 설정
+                # 폰트 없이 생성 (영어만)
                 wordcloud = WordCloud(
                     width=800, 
                     height=400,
                     background_color='white',
                     max_words=50,
-                    colormap='viridis'
+                    colormap='viridis',
+                    prefer_horizontal=0.9,
+                    min_font_size=10
                 ).generate_from_frequencies(filtered_counts)
             
-            # matplotlib 그래프로 변환 (한글 폰트 설정)
-            plt.rcParams['font.family'] = ['Malgun Gothic', 'DejaVu Sans']
-            plt.rcParams['axes.unicode_minus'] = False
-            
-            fig, ax = plt.subplots(figsize=(10, 5))
+            # matplotlib 그래프로 변환
+            fig, ax = plt.subplots(figsize=(12, 6))
             ax.imshow(wordcloud, interpolation='bilinear')
             ax.axis('off')
-            ax.set_title(f'주요 키워드 워드클라우드 ({period_text}{newspaper_text})', fontsize=16, pad=20)
+            ax.set_title(f'주요 키워드 워드클라우드 ({period_text}{newspaper_text})', 
+                        fontsize=16, pad=20, fontweight='bold')
+            
+            # 그래프 여백 조정
+            plt.tight_layout()
             
             return fig, period_text
             
         except Exception as e:
-            # 모든 폰트 설정 실패 시 영어로 표시
-            try:
-                wordcloud = WordCloud(
-                    width=800, 
-                    height=400,
-                    background_color='white',
-                    max_words=50,
-                    colormap='viridis'
-                ).generate_from_frequencies(filtered_counts)
-                
-                fig, ax = plt.subplots(figsize=(10, 5))
-                ax.imshow(wordcloud, interpolation='bilinear')
-                ax.axis('off')
-                ax.set_title(f'Keywords WordCloud ({period_text})', fontsize=16, pad=20)
-                
-                return fig, period_text
-            except:
-                return None, period_text
+            print(f"워드클라우드 생성 오류: {e}")
+            # 오류 발생 시 None 반환
+            return None, period_text
     
 
     
