@@ -10,3 +10,6 @@ numpy
 streamlit
 plotly
 altair
+wordcloud
+matplotlib
+numpy
