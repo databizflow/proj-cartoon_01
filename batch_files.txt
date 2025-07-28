@@ -1,0 +1,152 @@
+@echo off
+REM ===============================================
+REM 시사만평 크롤러 - Windows 자동 실행 배치 파일
+REM ===============================================
+
+REM 1. 설치 및 환경 설정 (install.bat)
+echo @echo off > install.bat
+echo echo ======================================== >> install.bat
+echo echo 📰 시사만평 크롤러 환경 설정 >> install.bat
+echo echo ======================================== >> install.bat
+echo. >> install.bat
+echo echo 1. Python 버전 확인... >> install.bat
+echo python --version >> install.bat
+echo if errorlevel 1 ( >> install.bat
+echo     echo ❌ Python이 설치되어 있지 않습니다. >> install.bat
+echo     echo Python 3.8 이상을 설치해주세요. >> install.bat
+echo     pause >> install.bat
+echo     exit /b 1 >> install.bat
+echo ^) >> install.bat
+echo. >> install.bat
+echo echo 2. 가상환경 생성... >> install.bat
+echo python -m venv venv >> install.bat
+echo if errorlevel 1 ( >> install.bat
+echo     echo ❌ 가상환경 생성 실패 >> install.bat
+echo     pause >> install.bat
+echo     exit /b 1 >> install.bat
+echo ^) >> install.bat
+echo. >> install.bat
+echo echo 3. 가상환경 활성화... >> install.bat
+echo call venv\Scripts\activate.bat >> install.bat
+echo. >> install.bat
+echo echo 4. 필요한 패키지 설치... >> install.bat
+echo pip install -r requirements.txt >> install.bat
+echo if errorlevel 1 ( >> install.bat
+echo     echo ❌ 패키지 설치 실패 >> install.bat
+echo     pause >> install.bat
+echo     exit /b 1 >> install.bat
+echo ^) >> install.bat
+echo. >> install.bat
+echo echo ✅ 설치 완료! >> install.bat
+echo echo run.bat 파일을 실행하여 프로그램을 시작하세요. >> install.bat
+echo pause >> install.bat
+
+REM 2. 크롤링 실행 (crawl.bat)
+echo @echo off > crawl.bat
+echo echo ======================================== >> crawl.bat
+echo echo 📰 시사만평 크롤링 시작 >> crawl.bat
+echo echo ======================================== >> crawl.bat
+echo. >> crawl.bat
+echo call venv\Scripts\activate.bat >> crawl.bat
+echo python cartoon_crawler.py >> crawl.bat
+echo pause >> crawl.bat
+
+REM 3. 대시보드 실행 (dashboard.bat)
+echo @echo off > dashboard.bat
+echo echo ======================================== >> dashboard.bat
+echo echo 🎛️ 대시보드 시작 >> dashboard.bat
+echo echo ======================================== >> dashboard.bat
+echo echo 브라우저에서 http://localhost:8501 로 접속하세요 >> dashboard.bat
+echo echo 종료하려면 이 창을 닫아주세요 >> dashboard.bat
+echo. >> dashboard.bat
+echo call venv\Scripts\activate.bat >> dashboard.bat
+echo streamlit run dashboard.py >> dashboard.bat
+
+REM 4. 통합 실행 (run.bat)
+echo @echo off > run.bat
+echo echo ======================================== >> run.bat
+echo echo 📰 시사만평 크롤러 ^& 대시보드 >> run.bat
+echo echo ======================================== >> run.bat
+echo. >> run.bat
+echo if not exist venv ( >> run.bat
+echo     echo ❌ 가상환경이 없습니다. install.bat을 먼저 실행하세요. >> run.bat
+echo     pause >> run.bat
+echo     exit /b 1 >> run.bat
+echo ^) >> run.bat
+echo. >> run.bat
+echo call venv\Scripts\activate.bat >> run.bat
+echo python run.py >> run.bat
+echo pause >> run.bat
+
+REM 5. 정리 및 제거 (clean.bat)
+echo @echo off > clean.bat
+echo echo ======================================== >> clean.bat
+echo echo 🧹 임시 파일 정리 >> clean.bat
+echo echo ======================================== >> clean.bat
+echo. >> clean.bat
+echo echo 다음 항목들을 삭제합니다: >> clean.bat
+echo echo - 가상환경 폴더 ^(venv^) >> clean.bat
+echo echo - 로그 파일들 >> clean.bat
+echo echo - 캐시 파일들 >> clean.bat
+echo. >> clean.bat
+echo set /p confirm="계속하시겠습니까? (y/N): " >> clean.bat
+echo if /i not "%confirm%"=="y" ( >> clean.bat
+echo     echo 취소되었습니다. >> clean.bat
+echo     pause >> clean.bat
+echo     exit /b 0 >> clean.bat
+echo ^) >> clean.bat
+echo. >> clean.bat
+echo if exist venv rmdir /s /q venv >> clean.bat
+echo if exist *.log del *.log >> clean.bat
+echo if exist __pycache__ rmdir /s /q __pycache__ >> clean.bat
+echo if exist .streamlit rmdir /s /q .streamlit >> clean.bat
+echo. >> clean.bat
+echo echo ✅ 정리 완료 >> clean.bat
+echo pause >> clean.bat
+
+REM 6. 사용법 도움말 (help.bat)
+echo @echo off > help.bat
+echo echo ======================================== >> help.bat
+echo echo 📚 시사만평 크롤러 사용법 >> help.bat
+echo echo ======================================== >> help.bat
+echo. >> help.bat
+echo echo 🚀 빠른 시작: >> help.bat
+echo echo   1. install.bat  - 최초 1회 실행 ^(환경 설정^) >> help.bat
+echo echo   2. run.bat      - 프로그램 실행 >> help.bat
+echo. >> help.bat
+echo echo 📋 개별 실행: >> help.bat
+echo echo   - crawl.bat     - 크롤링만 실행 >> help.bat
+echo echo   - dashboard.bat - 대시보드만 실행 >> help.bat
+echo. >> help.bat
+echo echo 🛠️ 유지보수: >> help.bat
+echo echo   - clean.bat     - 임시 파일 정리 >> help.bat
+echo echo   - help.bat      - 이 도움말 >> help.bat
+echo. >> help.bat
+echo echo 📁 폴더 구조: >> help.bat
+echo echo   - data/         - 수집된 데이터 저장 >> help.bat
+echo echo   - venv/         - Python 가상환경 >> help.bat
+echo. >> help.bat
+echo echo 🔧 문제 해결: >> help.bat
+echo echo   1. Python 3.8 이상 설치 확인 >> help.bat
+echo echo   2. 인터넷 연결 확인 >> help.bat
+echo echo   3. 방화벽/백신 프로그램 확인 >> help.bat
+echo. >> help.bat
+echo pause >> help.bat
+
+echo ======================================
+echo 배치 파일 생성 완료!
+echo ======================================
+echo.
+echo 생성된 파일들:
+echo - install.bat     : 최초 환경 설정
+echo - run.bat         : 통합 실행
+echo - crawl.bat       : 크롤링만 실행  
+echo - dashboard.bat   : 대시보드만 실행
+echo - clean.bat       : 정리 및 제거
+echo - help.bat        : 사용법 도움말
+echo.
+echo 사용법:
+echo 1. install.bat 실행 (최초 1회)
+echo 2. run.bat 실행 (일반 사용)
+echo.
+pause
