@@ -1,21 +1,21 @@
-# ✅ 크롤링 기본
+# 크롤링 기본
 requests>=2.31.0
 beautifulsoup4>=4.12.0
 lxml>=4.9.0
 
-# ✅ 데이터 처리
+# 데이터 처리
 pandas>=2.0.0
 numpy>=1.24.0
 
-# ✅ 스트림릿 대시보드
+# 스트림릿 대시보드
 streamlit>=1.28.0
 plotly>=5.17.0
 altair>=5.1.0
 
-# ✅ 시각화
+# 시각화
 matplotlib>=3.7.0
 wordcloud>=1.9.0
 Pillow>=10.0.0
 
-# ✅ 추가 유틸리티
+# 추가 유틸리티
 python-dateutil>=2.8.0
