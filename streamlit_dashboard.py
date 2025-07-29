@@ -205,12 +205,18 @@ class CartoonDashboard:
             import os
             import matplotlib.font_manager as fm
             
-            # Windows 한글 폰트 경로들 시도
+            # 프로젝트 내 폰트 경로 우선 사용
+            project_font_path = os.path.join(os.path.dirname(__file__), 'fonts', 'NotoSansKR-Regular.ttf')
+            
+            # 폰트 경로 우선순위
             font_paths = [
-                'C:/Windows/Fonts/malgun.ttf',     # 맑은 고딕
-                'C:/Windows/Fonts/gulim.ttc',      # 굴림
-                'C:/Windows/Fonts/batang.ttc',     # 바탕
-                'C:/Windows/Fonts/NanumGothic.ttf' # 나눔고딕
+                project_font_path,                 # 프로젝트 내 폰트 (최우선)
+                'fonts/NotoSansKR-Regular.ttf',    # 상대 경로
+                './fonts/NotoSansKR-Regular.ttf',  # 현재 디렉토리 기준
+                'C:/Windows/Fonts/malgun.ttf',     # Windows 맑은 고딕
+                'C:/Windows/Fonts/gulim.ttc',      # Windows 굴림
+                '/System/Library/Fonts/AppleGothic.ttf',  # macOS
+                '/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc'  # Linux
             ]
             
             # 사용 가능한 폰트 찾기
@@ -223,38 +229,32 @@ class CartoonDashboard:
             
             # matplotlib 한글 폰트 설정
             if font_path:
-                # 폰트 등록
-                font_prop = fm.FontProperties(fname=font_path)
-                plt.rcParams['font.family'] = font_prop.get_name()
+                # 폰트 등록 및 설정
+                try:
+                    font_prop = fm.FontProperties(fname=font_path)
+                    plt.rcParams['font.family'] = font_prop.get_name()
+                except:
+                    # 폰트 등록 실패 시 직접 경로 사용
+                    plt.rcParams['font.family'] = ['NotoSansKR', 'Malgun Gothic', 'AppleGothic', 'DejaVu Sans']
             else:
                 # 시스템 기본 한글 폰트 사용
-                plt.rcParams['font.family'] = ['Malgun Gothic', 'AppleGothic', 'DejaVu Sans']
+                plt.rcParams['font.family'] = ['NotoSansKR', 'Malgun Gothic', 'AppleGothic', 'DejaVu Sans']
             
             plt.rcParams['axes.unicode_minus'] = False
             
-            # 워드클라우드 생성
-            if font_path:
-                wordcloud = WordCloud(
-                    font_path=font_path,
-                    width=800, 
-                    height=400,
-                    background_color='white',
-                    max_words=50,
-                    colormap='viridis',
-                    prefer_horizontal=0.9,
-                    min_font_size=10
-                ).generate_from_frequencies(filtered_counts)
-            else:
-                # 폰트 없이 생성 (영어만)
-                wordcloud = WordCloud(
-                    width=800, 
-                    height=400,
-                    background_color='white',
-                    max_words=50,
-                    colormap='viridis',
-                    prefer_horizontal=0.9,
-                    min_font_size=10
-                ).generate_from_frequencies(filtered_counts)
+            # 워드클라우드 생성 (항상 폰트 경로 사용)
+            wordcloud = WordCloud(
+                font_path=font_path if font_path else None,
+                width=800, 
+                height=400,
+                background_color='white',
+                max_words=50,
+                colormap='viridis',
+                prefer_horizontal=0.9,
+                min_font_size=10,
+                relative_scaling=0.5,
+                max_font_size=100
+            ).generate_from_frequencies(filtered_counts)
             
             # matplotlib 그래프로 변환
             fig, ax = plt.subplots(figsize=(12, 6))
